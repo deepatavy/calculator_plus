@@ -1,3 +1,4 @@
+import 'package:calculator_plus/feature/calculator/calculator_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,20 +17,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const CalculatorScreen(),
-    );
-  }
-}
-
-class CalculatorScreen extends StatelessWidget {
-  const CalculatorScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calculator Plus'),
-        centerTitle: true,
-      ),
     );
   }
 }
