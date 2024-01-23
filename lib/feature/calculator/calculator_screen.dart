@@ -1,4 +1,5 @@
 import 'package:calculator_plus/native.dart';
+import 'package:calculator_plus/utils/constant_strings.dart';
 import 'package:calculator_plus/utils/regexp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,13 +26,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calculator Plus'),
+        title: const Text(
+          titleText,
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            // performCalculation(_controller.text);
             String result = await api.calculateResult(expression: _controller.text);
             performCalculation(result);
           }
@@ -53,11 +56,16 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16.0),
+                child: Text(inputHint),
+              ),
               TextFormField(
+                autofocus: true,
                 decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: 'Input',
-                    hintText: 'Enter expression',
+                    labelText: labelText,
+                    hintText: hintText,
                     suffixIcon: IconButton(
                         onPressed: () {
                           _controller.text = "";
@@ -69,7 +77,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                         ))),
                 validator: (text) {
                   if (text == null || text.isEmpty) {
-                    return 'Please enter valid input';
+                    return inputErrorText;
                   }
                   return null;
                 },
@@ -80,7 +88,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   }
                 },
                 inputFormatters: [
-                  FilteringTextInputFormatter.deny(invalidCalculatorRegex),
+                  FilteringTextInputFormatter.allow(validRegExp),
                 ],
                 autocorrect: false,
                 enableSuggestions: false,
@@ -91,20 +99,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 height: 16,
               ),
               Text(
-                "Output:\n$_output",
-                style: const TextStyle(fontSize: 14),
+                _output,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              // FutureBuilder(
-              //   future: api.helloWorld(expression: _controller.text),
-              //   builder: (context, data) {
-              //     if (data.hasData) {
-              //       return Text(data.data.toString());
-              //     }
-              //     return const Center(
-              //       child: CircularProgressIndicator(),
-              //     );
-              //   },
-              // )
             ],
           ),
         ),
