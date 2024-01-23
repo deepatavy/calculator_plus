@@ -1,9 +1,6 @@
 import 'dart:ffi';
-
 import 'dart:io' as io;
-
 import 'package:calculator_plus/bridge_generated.dart';
-
 
 const _base = 'native';
 
