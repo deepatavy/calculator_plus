@@ -15,10 +15,11 @@ class CalculatorScreen extends StatefulWidget {
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
   final TextEditingController _controller = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   String _output = "";
 
-  performCalculation(String input) {
+  updateOutput(String input) {
     setState(() {
       _output = input;
     });
@@ -27,10 +28,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: const Text(
           titleText,
-          style: TextStyle(fontWeight: FontWeight.w600),
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
         ),
         centerTitle: true,
         actions: [
@@ -38,14 +40,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               onPressed: () {
                 exit(0);
               },
-              icon: Icon(Icons.exit_to_app))
+              icon: const Icon(Icons.exit_to_app))
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             String result = await api.calculateResult(expression: _controller.text);
-            performCalculation(result);
+            if (result.toLowerCase().contains("error")) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text(inappropriateInputText), backgroundColor: Colors.red));
+            } else {
+              updateOutput(result);
+            }
           }
         },
         backgroundColor: Colors.purple,
@@ -60,58 +67,56 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       body: Form(
         key: _formKey,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(bottom: 24.0),
-                child: Text(inputHint),
-              ),
-              TextFormField(
-                autofocus: true,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: labelText,
-                    hintText: hintText,
-                    suffixIcon: IconButton(
-                        onPressed: () {
-                          _controller.text = "";
-                          performCalculation(_controller.text);
-                        },
-                        icon: const Icon(
-                          Icons.clear,
-                          color: Colors.grey,
-                        ))),
-                validator: (text) {
-                  if (text == null || text.isEmpty) {
-                    return inputErrorText;
-                  }
-                  return null;
-                },
-                onChanged: (str) {
-                  if (str.isEmpty) {
-                  } else {
-                    _formKey.currentState!.validate();
-                  }
-                },
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(validRegExp),
-                ],
-                autocorrect: false,
-                enableSuggestions: false,
-                controller: _controller,
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Text(
-                _output,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ],
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(inputHint),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: TextFormField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: labelText,
+                        hintText: hintText,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              _controller.text = "";
+                              updateOutput(_controller.text);
+                            },
+                            icon: const Icon(
+                              Icons.clear,
+                              color: Colors.grey,
+                            ))),
+                    validator: (text) {
+                      if (text == null || text.isEmpty) {
+                        return inputErrorText;
+                      }
+                      return null;
+                    },
+                    onChanged: (str) {
+                      if (str.isEmpty) {
+                      } else {
+                        _formKey.currentState!.validate();
+                      }
+                    },
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(validRegExp),
+                    ],
+                    autocorrect: false,
+                    enableSuggestions: false,
+                    controller: _controller,
+                    keyboardType: TextInputType.phone,
+                  ),
+                ),
+                Text(
+                  _output,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
           ),
         ),
       ),
