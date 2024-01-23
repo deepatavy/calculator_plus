@@ -1,3 +1,4 @@
+import 'package:calculator_plus/native.dart';
 import 'package:calculator_plus/utils/regexp.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +17,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   performCalculation(String input) {
     setState(() {
-      _output = _controller.text;
+      _output = input;
     });
   }
 
@@ -28,9 +29,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           if (_formKey.currentState!.validate()) {
-            performCalculation(_controller.text);
+            // performCalculation(_controller.text);
+            String result = await api.calculateResult(expression: _controller.text);
+            performCalculation(result);
           }
         },
         backgroundColor: Colors.purple,
@@ -89,8 +92,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               ),
               Text(
                 "Output:\n$_output",
-                style: TextStyle(fontSize: 14),
-              )
+                style: const TextStyle(fontSize: 14),
+              ),
+              // FutureBuilder(
+              //   future: api.helloWorld(expression: _controller.text),
+              //   builder: (context, data) {
+              //     if (data.hasData) {
+              //       return Text(data.data.toString());
+              //     }
+              //     return const Center(
+              //       child: CircularProgressIndicator(),
+              //     );
+              //   },
+              // )
             ],
           ),
         ),
