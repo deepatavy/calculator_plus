@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:calculator_plus/native.dart';
 import 'package:calculator_plus/utils/constant_strings.dart';
 import 'package:calculator_plus/utils/regexp.dart';
@@ -31,6 +33,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                exit(0);
+              },
+              icon: Icon(Icons.exit_to_app))
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
@@ -57,7 +66,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
+                padding: EdgeInsets.only(bottom: 24.0),
                 child: Text(inputHint),
               ),
               TextFormField(
