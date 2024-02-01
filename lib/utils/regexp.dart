@@ -1,0 +1,1 @@
+RegExp validRegExp = RegExp(r'[0-9+\-*/().\s]');
